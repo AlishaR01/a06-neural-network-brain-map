@@ -1,0 +1,386 @@
+heres the code so put it togther: <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A06: Neural Network Brain Map</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.21.1/cytoscape.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1a1a2e;
+            color: #eee;
+        }
+        #cy {
+            width: 100%;
+            height: 100vh;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        }
+        .info-panel {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(26, 26, 46, 0.95);
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #4ecdc4;
+            max-width: 350px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            z-index: 1000;
+        }
+        h1 {
+            margin: 0 0 10px 0;
+            font-size: 20px;
+            color: #4ecdc4;
+        }
+        h2 {
+            margin: 15px 0 8px 0;
+            font-size: 15px;
+            color: #ffd700;
+            border-bottom: 2px solid #ffd700;
+            padding-bottom: 5px;
+        }
+        .legend {
+            margin-top: 10px;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin: 8px 0;
+            font-size: 13px;
+        }
+        .color-box {
+            width: 24px;
+            height: 24px;
+            margin-right: 10px;
+            border-radius: 4px;
+            border: 2px solid rgba(255,255,255,0.4);
+            flex-shrink: 0;
+        }
+        .legend-desc {
+            line-height: 1.4;
+        }
+        .controls {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(26, 26, 46, 0.95);
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #4ecdc4;
+            z-index: 1000;
+        }
+        button {
+            background: #4ecdc4;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 5px;
+            color: #1a1a2e;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        button:hover {
+            background: #45b7aa;
+            transform: translateY(-2px);
+        }
+        .section-label {
+            font-size: 11px;
+            color: #aaa;
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="info-panel">
+        <h1>A06: Neural Network Brain</h1>
+        <p style="margin: 5px 0; font-size: 13px; font-weight: bold;">Scenario: Smartphone Face Unlock</p>
+        <p style="margin: 5px 0; font-size: 12px; color: #aaa;">Student: Alisha Rush | ITAI 1370</p>
+        
+        <h2>📍 Map Sections</h2>
+        <div class="section-label"><strong>Top-Left:</strong> Part 1 - Biology → Artificial</div>
+        <div class="section-label"><strong>Top-Right:</strong> Part 2 - Network Architecture</div>
+        <div class="section-label"><strong>Bottom-Left:</strong> Part 3 - Learning Process</div>
+        <div class="section-label"><strong>Bottom-Right:</strong> Part 4 - Real Applications</div>
+        
+        <h2>🎨 Color Key</h2>
+        <div class="legend">
+            <div class="legend-item">
+                <div class="color-box" style="background: #52b788;"></div>
+                <div class="legend-desc"><strong>Green</strong> = Biology<br><small>Brain neurons & how they work</small></div>
+            </div>
+            <div class="legend-item">
+                <div class="color-box" style="background: #4ecdc4;"></div>
+                <div class="legend-desc"><strong>Blue</strong> = Artificial<br><small>Computer neurons & networks</small></div>
+            </div>
+            <div class="legend-item">
+                <div class="color-box" style="background: #b392f0;"></div>
+                <div class="legend-desc"><strong>Purple</strong> = Learning<br><small>How the network trains/improves</small></div>
+            </div>
+            <div class="legend-item">
+                <div class="color-box" style="background: #ff9f43;"></div>
+                <div class="legend-desc"><strong>Orange</strong> = Applications<br><small>Real-world AI uses</small></div>
+            </div>
+        </div>
+        
+        <p style="margin-top: 15px; font-size: 11px; color: #888; border-top: 1px solid #444; padding-top: 10px;">
+            💡 <strong>Tip:</strong> Click and drag to explore. Use controls below to zoom.
+        </p>
+    </div>
+
+    <div class="controls">
+        <button onclick="cy.fit(null, 150); cy.zoom(cy.zoom() * 0.55);">See Full Map</button>
+        <button onclick="cy.zoom(cy.zoom() * 1.2)">Zoom In</button>
+        <button onclick="cy.zoom(cy.zoom() * 0.8)">Zoom Out</button>
+    </div>
+
+    <div id="cy"></div>
+
+    <script>
+        const cy = cytoscape({
+            container: document.getElementById('cy'),
+            
+            elements: [
+                // SECTION HEADER NODES - properly spaced
+                { data: { id: 'header1', label: '═══ PART 1 ═══\nBIOLOGY → ARTIFICIAL\nMAPPING', type: 'header' }, position: { x: 400, y: 100 } },
+                { data: { id: 'header2', label: '═══ PART 2 ═══\nNEURAL NETWORK\nARCHITECTURE', type: 'header' }, position: { x: 1400, y: 100 } },
+                { data: { id: 'header3', label: '═══ PART 3 ═══\nLEARNING PROCESS\nLOOP', type: 'header' }, position: { x: 400, y: 800 } },
+                { data: { id: 'header4', label: '═══ PART 4 ═══\nCONTEMPORARY\nAPPLICATIONS', type: 'header' }, position: { x: 1400, y: 800 } },
+
+                // PART 1: BIOLOGICAL NODES (Green) - Starting at y: 200
+                { data: { id: 'dendrites', label: 'Dendrites\nCollect signals from\nother neurons', type: 'biology' }, position: { x: 250, y: 200 } },
+                { data: { id: 'synapses', label: 'Synapses\nConnection strength\nbetween neurons', type: 'biology' }, position: { x: 250, y: 300 } },
+                { data: { id: 'soma', label: 'Cell Body (Soma)\nIntegrates signals,\ndecides whether to fire', type: 'biology' }, position: { x: 250, y: 400 } },
+                { data: { id: 'axon', label: 'Axon\nCarries the\noutput signal', type: 'biology' }, position: { x: 250, y: 500 } },
+                { data: { id: 'neuroplasticity', label: 'Neuroplasticity\nSynapse strengths\nchange with experience', type: 'biology' }, position: { x: 250, y: 600 } },
+
+                // PART 1: ARTIFICIAL NODES (Blue)
+                { data: { id: 'inputs', label: 'Inputs (x₁…xₙ)\nNumbers representing\nfeatures/pixels', type: 'artificial' }, position: { x: 550, y: 200 } },
+                { data: { id: 'weights', label: 'Weights (w₁…wₙ)\nStrengths applied\nto each input', type: 'artificial' }, position: { x: 550, y: 300 } },
+                { data: { id: 'bias', label: 'Bias (b)\nBaseline shift\nfor activation', type: 'artificial' }, position: { x: 700, y: 350 } },
+                { data: { id: 'activation', label: 'Activation f(·)\nReLU/Sigmoid—\nnonlinearity & thresholding', type: 'artificial' }, position: { x: 550, y: 400 } },
+                { data: { id: 'output', label: 'Output (ŷ)\nPrediction—\n"Unlock" vs "Deny"', type: 'artificial' }, position: { x: 550, y: 500 } },
+                { data: { id: 'weight_update', label: 'Weight Update (Δw)\nLearning step\nchanges weights', type: 'artificial' }, position: { x: 550, y: 600 } },
+
+                // Single neuron to network path
+                { data: { id: 'single_neuron', label: 'Single Artificial\nNeuron', type: 'artificial' }, position: { x: 250, y: 720 } },
+                { data: { id: 'layer', label: 'Layer', type: 'artificial' }, position: { x: 400, y: 720 } },
+                { data: { id: 'network', label: 'Network\n(Layers stacked)', type: 'artificial' }, position: { x: 550, y: 720 } },
+
+                // PART 2: ARCHITECTURE (Blue) - Starting at y: 200
+                { data: { id: 'input_layer', label: 'Input Layer\nFace image pixels\n(112×112×3)', type: 'artificial' }, position: { x: 1000, y: 200 } },
+                { data: { id: 'hidden1', label: 'Hidden Layer 1\nFeatures:\nEdges, corners,\nbasic textures', type: 'artificial' }, position: { x: 1200, y: 200 } },
+                { data: { id: 'hidden2', label: 'Hidden Layer 2\nPatterns:\nEye/mouth/face-shape\npatterns', type: 'artificial' }, position: { x: 1400, y: 200 } },
+                { data: { id: 'hidden3', label: 'Hidden Layer 3\nIdentity:\nAbstract identity\nfeatures', type: 'artificial' }, position: { x: 1600, y: 200 } },
+                { data: { id: 'output_layer', label: 'Output Layer\nProbability:\nUnlock vs Deny', type: 'artificial' }, position: { x: 1800, y: 200 } },
+
+                // Architecture satellites
+                { data: { id: 'weights_biases', label: 'Weights &\nBiases', type: 'artificial' }, position: { x: 1400, y: 350 } },
+                { data: { id: 'activation_funcs', label: 'Activation\nFunctions', type: 'artificial' }, position: { x: 1200, y: 350 } },
+                { data: { id: 'forward_prop', label: 'Forward\nPropagation', type: 'artificial' }, position: { x: 1400, y: 80 } },
+                { data: { id: 'loss_func', label: 'Loss\nFunction', type: 'artificial' }, position: { x: 1950, y: 200 } },
+                { data: { id: 'backprop', label: 'Backpropagation', type: 'artificial' }, position: { x: 1950, y: 350 } },
+
+                // Real-world applications (Orange)
+                { data: { id: 'face_unlock', label: 'Face Unlock\nAccept/Reject user', type: 'app' }, position: { x: 1800, y: 350 } },
+                { data: { id: 'face_filters', label: 'Face Filters\nFeature extraction\n→ masks', type: 'app' }, position: { x: 1600, y: 350 } },
+                { data: { id: 'recommender', label: 'Recommendation\nSystems\nEmbedding similarity', type: 'app' }, position: { x: 1400, y: 480 } },
+                { data: { id: 'voice_assist', label: 'Voice Assistants\nAudio features\n→ text intent', type: 'app' }, position: { x: 1000, y: 350 } },
+
+                // PART 3: LEARNING PROCESS (Purple) - Starting at y: 900
+                { data: { id: 'train_data', label: '1. Training Data\nImages + Labels\nUser face = positive;\nothers = negative', type: 'learning' }, position: { x: 200, y: 900 } },
+                { data: { id: 'forward_pass', label: '2. Forward Pass\nCompute\nprediction ŷ', type: 'learning' }, position: { x: 400, y: 900 } },
+                { data: { id: 'loss', label: '3. Loss (Error)\nHow wrong was\nŷ vs label y?', type: 'learning' }, position: { x: 600, y: 900 } },
+                { data: { id: 'backprop_step', label: '4. Backpropagation\nCompute gradients\n∂Loss/∂w', type: 'learning' }, position: { x: 600, y: 1050 } },
+                { data: { id: 'optimizer', label: '5. Optimizer\n(Adam/SGD)\nUpdate weights:\nw ← w − η·gradient', type: 'learning' }, position: { x: 400, y: 1050 } },
+                { data: { id: 'repeat', label: '6. Repeat for\nMany Epochs\nPerformance\nimproves over time', type: 'learning' }, position: { x: 200, y: 1050 } },
+
+                // Overfitting vs Generalization
+                { data: { id: 'overfitting', label: 'Overfitting\nMemorizes training faces;\nfails on new lighting/angles\n\n📚 Analogy:\nStudent memorizes\nexact practice answers', type: 'learning' }, position: { x: 200, y: 1250 } },
+                { data: { id: 'generalization', label: 'Generalization\nRecognizes you under\nvaried conditions\n\n📚 Analogy:\nStudent understands\nconcepts & solves\nnew problems', type: 'learning' }, position: { x: 500, y: 1250 } },
+
+                // PART 4: CONTEMPORARY (Orange) - Starting at y: 900
+                { data: { id: 'chatgpt', label: 'ChatGPT\n(Transformers)\nLanguage understanding;\nneural networks at scale', type: 'app' }, position: { x: 1200, y: 900 } },
+                { data: { id: 'image_gen', label: 'Image Generators\n(Diffusion)\nNeural nets generate\nrealistic images', type: 'app' }, position: { x: 1400, y: 900 } },
+                { data: { id: 'voice_contemporary', label: 'Voice Assistants\nSpeech → Text → Intent\nvia neural nets', type: 'app' }, position: { x: 1600, y: 900 } },
+                { data: { id: 'recommender_contemporary', label: 'Recommendation\nSystems\nEmbeddings +\nneural ranking', type: 'app' }, position: { x: 1200, y: 1050 } },
+                { data: { id: 'deep_learning', label: 'Deep Learning\n(Module 7 Preview)\nCNNs, RNNs,\nTransformers', type: 'app' }, position: { x: 1400, y: 1050 } },
+
+                // EDGES - PART 1: Biology to Artificial
+                { data: { source: 'dendrites', target: 'inputs', label: 'collect signals' } },
+                { data: { source: 'synapses', target: 'weights', label: 'connection strength' } },
+                { data: { source: 'soma', target: 'activation', label: 'decide/fire' } },
+                { data: { source: 'axon', target: 'output', label: 'transmit result' } },
+                { data: { source: 'neuroplasticity', target: 'weight_update', label: 'learning changes\nstrength' } },
+
+                // Single neuron to network
+                { data: { source: 'single_neuron', target: 'layer', label: 'combine many\nneurons' } },
+                { data: { source: 'layer', target: 'network', label: 'deeper =\nricher features' } },
+
+                // EDGES - PART 2: Architecture flow
+                { data: { source: 'input_layer', target: 'hidden1', label: 'forward pass' } },
+                { data: { source: 'hidden1', target: 'hidden2', label: 'transform\nfeatures' } },
+                { data: { source: 'hidden2', target: 'hidden3', label: 'higher\nabstraction' } },
+                { data: { source: 'hidden3', target: 'output_layer', label: 'decision' } },
+                { data: { source: 'output_layer', target: 'loss_func', label: 'compare\nwith label' } },
+                { data: { source: 'loss_func', target: 'backprop', label: 'compute\nerror' } },
+                { data: { source: 'backprop', target: 'hidden3', label: 'error\ngradients' } },
+                { data: { source: 'backprop', target: 'hidden2', label: 'update\nweights' } },
+                { data: { source: 'backprop', target: 'hidden1', label: 'update\nweights' } },
+
+                // Satellites to layers
+                { data: { source: 'weights_biases', target: 'hidden2' } },
+                { data: { source: 'activation_funcs', target: 'hidden1' } },
+
+                // Apps to outputs
+                { data: { source: 'output_layer', target: 'face_unlock' } },
+                { data: { source: 'hidden3', target: 'face_filters' } },
+                { data: { source: 'hidden2', target: 'recommender' } },
+                { data: { source: 'input_layer', target: 'voice_assist' } },
+
+                // EDGES - PART 3: Learning loop
+                { data: { source: 'train_data', target: 'forward_pass', label: 'input batch' } },
+                { data: { source: 'forward_pass', target: 'loss', label: 'compute\nerror' } },
+                { data: { source: 'loss', target: 'backprop_step', label: 'distribute\nblame' } },
+                { data: { source: 'backprop_step', target: 'optimizer', label: 'update\nweights' } },
+                { data: { source: 'optimizer', target: 'repeat', label: 'iterate' } },
+                { data: { source: 'repeat', target: 'train_data', label: 'next epoch' } },
+
+                // Overfitting/Generalization connections
+                { data: { source: 'train_data', target: 'overfitting', label: 'too specific' } },
+                { data: { source: 'repeat', target: 'generalization', label: 'proper validation\n& regularization' } },
+
+                // EDGES - PART 4: Contemporary connections
+                { data: { source: 'network', target: 'deep_learning', label: 'larger models,\nspecialized layers' } },
+                { data: { source: 'repeat', target: 'chatgpt', label: 'same train/\nvalidate loop' } },
+                { data: { source: 'repeat', target: 'image_gen', label: 'same train/\nvalidate loop' } },
+                { data: { source: 'repeat', target: 'voice_contemporary', label: 'same train/\nvalidate loop' } },
+                { data: { source: 'repeat', target: 'recommender_contemporary', label: 'same train/\nvalidate loop' } },
+                { data: { source: 'neuroplasticity', target: 'chatgpt', label: 'inspiration:\nlearning by\nadjusting strengths' } },
+            ],
+
+            style: [
+                {
+                    selector: 'node',
+                    style: {
+                        'label': 'data(label)',
+                        'text-valign': 'center',
+                        'text-halign': 'center',
+                        'text-wrap': 'wrap',
+                        'text-max-width': '150px',
+                        'font-size': '11px',
+                        'color': '#fff',
+                        'background-color': '#4ecdc4',
+                        'border-width': 2,
+                        'border-color': '#fff',
+                        'width': 'label',
+                        'height': 'label',
+                        'padding': '12px',
+                        'shape': 'roundrectangle',
+                        'font-weight': 'bold',
+                        'text-outline-width': 2,
+                        'text-outline-color': '#1a1a2e'
+                    }
+                },
+                {
+                    selector: 'node[type="header"]',
+                    style: {
+                        'background-color': '#ffd700',
+                        'border-color': '#ffed4e',
+                        'color': '#1a1a2e',
+                        'text-outline-color': '#ffd700',
+                        'font-size': '13px',
+                        'font-weight': 'bold',
+                        'border-width': 3,
+                        'padding': '15px'
+                    }
+                },
+                {
+                    selector: 'node[type="biology"]',
+                    style: {
+                        'background-color': '#52b788',
+                        'border-color': '#74c69d'
+                    }
+                },
+                {
+                    selector: 'node[type="artificial"]',
+                    style: {
+                        'background-color': '#4ecdc4',
+                        'border-color': '#7ee8e0'
+                    }
+                },
+                {
+                    selector: 'node[type="learning"]',
+                    style: {
+                        'background-color': '#b392f0',
+                        'border-color': '#d4b5ff'
+                    }
+                },
+                {
+                    selector: 'node[type="app"]',
+                    style: {
+                        'background-color': '#ff9f43',
+                        'border-color': '#ffb976'
+                    }
+                },
+                {
+                    selector: 'edge',
+                    style: {
+                        'width': 3,
+                        'line-color': '#666',
+                        'target-arrow-color': '#666',
+                        'target-arrow-shape': 'triangle',
+                        'curve-style': 'bezier',
+                        'label': 'data(label)',
+                        'font-size': '9px',
+                        'color': '#4ecdc4',
+                        'text-background-color': '#1a1a2e',
+                        'text-background-opacity': 0.9,
+                        'text-background-padding': '3px',
+                        'text-rotation': 'autorotate'
+                    }
+                },
+                {
+                    selector: 'node:selected',
+                    style: {
+                        'border-width': 4,
+                        'border-color': '#ffd700',
+                        'background-color': '#ffd700',
+                        'color': '#1a1a2e',
+                        'text-outline-color': '#ffd700'
+                    }
+                }
+            ],
+
+            layout: {
+                name: 'preset'
+            },
+
+            minZoom: 0.2,
+            maxZoom: 3,
+            wheelSensitivity: 0.2
+        });
+
+        // Fit view on load - optimized to show ENTIRE map
+        cy.ready(function() {
+            cy.fit(null, 150);
+            cy.zoom(cy.zoom() * 0.55);
+            cy.center();
+        });
+
+        // Node hover effect
+        cy.on('mouseover', 'node', function(e) {
+            e.target.style('border-width', '4');
+        });
+
+        cy.on('mouseout', 'node', function(e) {
+            if (!e.target.selected()) {
+                e.target.style('border-width', '2');
+            }
+        });
+    </script>
+</body>
+</html>
